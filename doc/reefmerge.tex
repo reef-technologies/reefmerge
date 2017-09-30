@@ -1,5 +1,6 @@
 \documentclass[a4paper,10pt]{article}
 \usepackage[utf8]{inputenc}
+\usepackage{listings}
 
 %opening
 \title{Reefmerge}
@@ -36,14 +37,33 @@ no matter if conflict occurred while merging, rebasing, or applying a patch.
 I expect the tool usage will be most possibly easy,
 so this functionality will be injected to git as a plugin - a merge driver.
 
-Lets imagine that programmer A added a function foo\_a() at the end of file code.py.
-At the same time programmer B implemented a function foo\_b() at the end of the same file,
-and pushed his code onto master branch. Then the programmer A wants to merge branch master onto his
-developing branch and encounter a conflict. In fact, there are implementations of two different
-functions with different names, so what is the problem?
+Lets imagine that programmer A added import of module 're' and programmer B added import of module 'itertools'.
+When it comes to merge their code, a conflict occurs - because they commited changes in the same line.
+\begin{lstlisting}
+<<<<<<<
+import itertools
+=======
+import re
+>>>>>>>
+\end{lstlisting}
+In fact, there are two different import statements, so what is the problem?
 Git does not recognize Python syntax and semantics and doesn't understand that this conflict
-can be simply resolved just by placing foo\_b() implementation just after foo\_a().
+can be simply resolved just by:
+\begin{lstlisting}
+import itertools
+import re
+\end{lstlisting}
 We need a tool that understands Python and can resolve such conflicts automatically.
+
+Here I've listed kinds of conflicts in Python code that can be resolved by reefmerge:
+\begin{itemize}
+\item Conflicts by editing the same line (e.g. added parameter to function)
+\item Conflicts by adding different lines in the same place (e.g. import, new function, new variable initialization)
+\item New element to dict, list, etc.
+\end{itemize}
+Adding or modyfing statements is a kind of problem that should not be automatically resolved,
+because order of statements matters and it is hard to decide which should be first,
+especially when these statements produces side effects that are important from the whole program perspective.
 
 The best option that we could imagine is to somehow tell the git how to resolve conflicts
 in Python code. Fortunately, git allows to select custom merging driver.
