@@ -69,3 +69,35 @@ function countAllRepos()
     echo "all merges: $ALL"
     echo "conflicts: $COUNT"
 }
+
+function countInQuarters()
+{
+    YEAR=`date +"%Y"`
+    DAYS_IN_MONTH=(31 28 31 30 31 30 31 31 30 31 30 31)
+    START_YEAR=$(git log $(git log --pretty=format:%H|tail -1) | grep Date | cut -f4 -d":" | cut -f2 -d" ")
+    for yr in `seq $START_YEAR $YEAR`
+    do
+        for month in `seq 0 3`
+        do
+            let IN_MONTH=0
+            let ALL_IN_MONTH=0
+            let START=$month*3+1
+            let STOP=$START+2
+            for commit in $(git rev-list --merges --after=$yr-$START-01 --before=$yr-$STOP-${A[$STOP]} HEAD)
+            do
+                let ALL_IN_MONTH+=1
+                if checkForConflict $commit
+                then
+                    let IN_MONTH+=1
+                fi
+            done
+            if (( $ALL_IN_MONTH > 0 ))
+            then
+                PERCENTAGE=`bc <<< "scale=2; 100*$IN_MONTH/$ALL_IN_MONTH"`
+                echo "In quarter $month in year $yr: conflicts/merges: $IN_MONTH / $ALL_IN_MONTH ($PERCENTAGE%)"
+            else
+                echo "Nothing merged in quarter $month of $yr"
+            fi
+        done
+    done
+}
