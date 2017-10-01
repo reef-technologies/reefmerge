@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# script should run in the repository
-
 function write()
 {
 #    echo $1
@@ -51,5 +49,3 @@ function countOneRepo()
     echo "all merges: $ALL"
     echo "conflicts: $COUNT"
 }
-
-countOneRepo
