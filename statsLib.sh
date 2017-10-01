@@ -26,7 +26,6 @@ function checkForConflict()
         RES=$(echo $?)
         if (( $RES == 0 ))
         then
-            echo "!!!!!!!!! Conflict detected, conflicts = $COUNT, all = $ALL !!!!!!!!"
             return 0
         fi
     fi
@@ -44,6 +43,27 @@ function countOneRepo()
         then
             let COUNT+=1
         fi
+    done
+
+    echo "all merges: $ALL"
+    echo "conflicts: $COUNT"
+}
+
+function countAllRepos()
+{
+    COUNT=0
+    ALL=0
+    for repo in $(ls -1d */)
+    do
+        cd $repo
+        echo "Processing $repo"
+        RESULTS=$(countOneRepo)
+        cd ..
+        ADD_COUNT=$(echo "$RESULTS" | grep "conflicts" | cut -f2 -d" ")
+        ADD_ALL=$(echo "$RESULTS" | grep "all merges" | cut -f3 -d" ")
+        let COUNT+=$ADD_COUNT
+        let ALL+=$ADD_ALL
+        echo "$repo processed, count = $ADD_COUNT, all = $ADD_ALL"
     done
 
     echo "all merges: $ALL"
