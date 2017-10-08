@@ -112,3 +112,34 @@ function countInQuarters()
         done
     done
 }
+
+function countInChunks()
+{
+    CHUNKS_NUM=$1  # TODO error handling?
+    ALL_MERGES=$(git rev-list --merges HEAD)
+    MERGE_COMMITS_NUM=$(echo "$ALL_MERGES" | wc -l)
+    COMMITS_IN_CHUNK=$(python -c "print($MERGE_COMMITS_NUM/$CHUNKS_NUM.0)")
+    echo $COMMITS_IN_CHUNK
+    PREV_CHUNK=0
+    CURR_CHUNK=0
+    CHUNK_START=0
+    CHUNK_END=$(echo "$COMMITS_IN_CHUNK" | cut -f1 -d'.')
+    CHUNK_END_FL=$COMMITS_IN_CHUNK
+    CURR=0
+    CONFLICTS=0
+    for COMMIT in `echo "$ALL_MERGES"`
+    do
+        if checkForConflict $COMMIT
+        then
+            let CONFLICTS+=1
+        fi
+        let CURR+=1
+        if (( $CURR >= $CHUNK_END ))
+        then
+            echo "chunk ending with $CHUNK_END_FL got $CONFLICTS conflicts"
+            CHUNK_END_FL=$(echo "$CHUNK_END_FL + $COMMITS_IN_CHUNK" | bc)
+            CHUNK_END=$(echo "$CHUNK_END_FL" | cut -f1 -d'.')
+            CONFLICTS=0
+        fi
+    done
+}
