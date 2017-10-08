@@ -2,7 +2,7 @@
 
 function write()
 {
-#    echo $1
+    # echo $1
     return 0
 }
 
@@ -22,7 +22,8 @@ function checkForConflict()
         write "Harder case, not implemented yet"
     else
         ancestor=$(git merge-base ${A[0]} ${A[1]}) # works only for 2 parents of commit
-        git merge-tree $ancestor ${A[0]} ${A[1]} | grep -q ">>>>>>>" # FIXME this grepping may not be sufficient
+        DIFF=$(git merge-tree $ancestor ${A[0]} ${A[1]})
+        echo $DIFF | grep -q ">>>>>>>" # FIXME this grepping may not be sufficient
         RES=$(echo $?)
         if (( $RES == 0 ))
         then
@@ -91,12 +92,22 @@ function countInQuarters()
                     let IN_MONTH+=1
                 fi
             done
+            if (( $START < 10 ))
+            then
+              START="0$START"
+            fi
             if (( $ALL_IN_MONTH > 0 ))
             then
                 PERCENTAGE=`bc <<< "scale=2; 100*$IN_MONTH/$ALL_IN_MONTH"`
-                echo "In quarter $month in year $yr: conflicts/merges: $IN_MONTH / $ALL_IN_MONTH ($PERCENTAGE%)"
+                csv="yes"
+                if [ -z "$csv" ]
+                then
+                  echo "In quarter $month in year $yr: conflicts/merges: $IN_MONTH / $ALL_IN_MONTH ($PERCENTAGE%)"
+                else
+                  echo "$yr-$START-01,$PERCENTAGE"
+                fi
             else
-                echo "Nothing merged in quarter $month of $yr"
+              echo "$yr-$START-01,0"
             fi
         done
     done
