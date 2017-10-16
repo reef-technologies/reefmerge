@@ -9,6 +9,7 @@ function write()
 function checkForConflict()
 {
     COMMIT=$1
+    ECHO_DIFF=$2
     A=($(git rev-list --parents -n 1 $COMMIT))
 	mergeCommit=${A[0]}
 	write "Parents of commit $mergeCommit:"
@@ -23,6 +24,10 @@ function checkForConflict()
     else
         ancestor=$(git merge-base ${A[0]} ${A[1]}) # works only for 2 parents of commit
         DIFF=$(git merge-tree $ancestor ${A[0]} ${A[1]})
+        if [ "$ECHO_DIFF" ]
+        then
+            echo "$DIFF"
+        fi
         echo $DIFF | grep -q ">>>>>>>" # FIXME this grepping may not be sufficient
         RES=$(echo $?)
         if (( $RES == 0 ))
@@ -142,4 +147,33 @@ function countInChunks()
             CONFLICTS=0
         fi
     done
+}
+
+function countImportConflicts()
+{
+    COUNT=0
+    IMPORTS=0
+    ALL=0
+    for commit in $(git rev-list --merges HEAD)
+    do
+        let ALL+=1
+        DIFF=$(checkForConflict $commit true)
+        RES=$(echo $?)
+        if (( $RES == 0 ))
+        then
+            let COUNT+=1
+        else
+            continue
+        fi
+        echo "$DIFF" | grep -q "+import"
+        RES=$(echo $?)
+        if (( $RES == 0 ))
+        then
+            let IMPORTS+=1
+        fi
+    done
+
+    echo "all merges: $ALL"
+    echo "import conflicts: $IMPORTS"
+    echo "conflicts: $COUNT"
 }
