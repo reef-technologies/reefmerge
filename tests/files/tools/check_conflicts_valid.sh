@@ -4,8 +4,8 @@ source ./impls/validate_conflict.sh
 
 FAILS=0
 
-SINGLE_TESTS=../single
-for testdir in $(ls -1 $SINGLE_TESTS)
+SINGLE_TESTS="../single"
+for testdir in $(ls -1 "$SINGLE_TESTS")
 do
     validate "$SINGLE_TESTS/$testdir" 2>&1 >/dev/null
     if [ $(echo $?) ]
