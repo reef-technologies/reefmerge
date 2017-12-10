@@ -24,14 +24,24 @@ function checkForConflict()
     else
         ancestor=$(git merge-base ${A[0]} ${A[1]}) # works only for 2 parents of commit
         DIFF=$(git merge-tree $ancestor ${A[0]} ${A[1]})
-        if [ "$ECHO_DIFF" ]
-        then
-            echo "$DIFF"
-        fi
         echo $DIFF | grep -q ">>>>>>>" # FIXME this grepping may not be sufficient
         RES=$(echo $?)
+
         if (( $RES == 0 ))
         then
+            if [ "$ECHO_DIFF" ]
+            then
+                git checkout "${A[0]}"
+                git merge --no-ff --no-commit "${A[1]}"
+                DIFF=$(git diff)
+                echo
+                echo
+                echo "$DIFF"
+                echo
+                echo
+                git reset --hard
+                git checkout -
+            fi
             return 0
         fi
     fi
