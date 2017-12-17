@@ -1,6 +1,6 @@
 import sys
 
-from reefmerge.constants import Version
+from reefmerge.files_handler import Files
 from reefmerge.merger import Merger
 
 
@@ -9,11 +9,12 @@ def main():
         raise Exception("Cannot work with less than 3 arguments")
     # TODO check if files exists?
 
-    files = {
-        Version.ANCESTOR: sys.argv[1],
-        Version.MINE: sys.argv[2],
-        Version.YOURS: sys.argv[3],
-    }
+    files = Files(
+        ancestor=sys.argv[1],
+        mine=sys.argv[2],
+        yours=sys.argv[3]
+    )
+    # dry_run = "-d" in sys.argv
 
     merger = Merger(files=files)
     merger.merge()
