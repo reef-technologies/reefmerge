@@ -14,10 +14,10 @@ def main():
         mine=sys.argv[2],
         yours=sys.argv[3]
     )
-    # dry_run = "-d" in sys.argv
+    dry_run = "-d" in sys.argv
 
     merger = Merger(files=files)
-    merger.merge()
+    merger.merge(dry_run=dry_run)
 
 
 if __name__ == "__main__":
