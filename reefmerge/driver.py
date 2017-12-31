@@ -1,23 +1,27 @@
-import sys
+from argparse import ArgumentParser
 
-from reefmerge.files_handler import Files
+from reefmerge.conflict_handler import ConflictHandler
 from reefmerge.merger import Merger
 
 
 def main():
-    if len(sys.argv) < 4:
+    parser = ArgumentParser()
+    parser.add_argument("files", nargs=3)
+    parser.add_argument("-d", action="store_true")
+    args = parser.parse_args()
+
+    if len(args.files) < 3:
         raise Exception("Cannot work with less than 3 arguments")
     # TODO check if files exists?
 
-    files = Files(
-        ancestor=sys.argv[1],
-        mine=sys.argv[2],
-        yours=sys.argv[3]
+    conflict_han = ConflictHandler(
+        ancestor_filepath=args.files[0],
+        mine_filepath=args.files[1],
+        yours_filepath=args.files[2]
     )
-    dry_run = "-d" in sys.argv
 
-    merger = Merger(files=files)
-    merger.merge(dry_run=dry_run)
+    merger = Merger(conflict_handler=conflict_han)
+    merger.merge(dry_run=args.d)
 
 
 if __name__ == "__main__":

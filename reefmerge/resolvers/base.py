@@ -1,7 +1,7 @@
 
 class BaseMerger(object):
-    def __init__(self, files):
-        self._files = files
+    def __init__(self, conflict_handler):
+        self._conflict_handler = conflict_handler
 
     def merge(self):
         raise NotImplementedError("Implemented in subclass")

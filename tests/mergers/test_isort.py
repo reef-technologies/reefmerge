@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from reefmerge.files_handler import Files
+from reefmerge.conflict_handler import ConflictHandler
 from reefmerge.merger import ISortMerger
 
 ISORT_MERGER_TEST_FILES_PATH = os.path.join("tests", "files", "isort")
@@ -11,10 +11,10 @@ ISORT_MERGER_TEST_FILES_PATH = os.path.join("tests", "files", "isort")
     "permuted_imports",
 ])
 def test_merge(path):
-    files, result_file = _files_obj_generator(path)
-    files.read_originals()
+    conflict_handler, result_file = _create_conflict_handler(path)
+    conflict_handler.read_originals()
 
-    result = ISortMerger(files).merge()
+    result = ISortMerger(conflict_handler).merge()
 
     with open(result_file, 'r') as rfd:
         expected_content = rfd.read()
@@ -25,11 +25,11 @@ def test_merge(path):
     assert expected_content == result
 
 
-def _files_obj_generator(files_set_name):
+def _create_conflict_handler(files_set_name):
     files_location = os.path.join(ISORT_MERGER_TEST_FILES_PATH, files_set_name)
-    files = Files(
-        ancestor=os.path.join(files_location, "ancestor.py"),
-        mine=os.path.join(files_location, "mine.py"),
-        yours=os.path.join(files_location, "yours.py")
+    conflict_handler = ConflictHandler(
+        ancestor_filepath=os.path.join(files_location, "ancestor.py"),
+        mine_filepath=os.path.join(files_location, "mine.py"),
+        yours_filepath=os.path.join(files_location, "yours.py")
     )
-    return files, os.path.join(files_location, "result.py")
+    return conflict_handler, os.path.join(files_location, "result.py")

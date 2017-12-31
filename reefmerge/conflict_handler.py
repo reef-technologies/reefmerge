@@ -4,12 +4,12 @@ import tempfile
 from reefmerge.constants import Version
 
 
-class Files(object):
-    def __init__(self, ancestor, mine, yours):
+class ConflictHandler(object):
+    def __init__(self, ancestor_filepath, mine_filepath, yours_filepath):
         self._paths = {
-            Version.ANCESTOR: ancestor,
-            Version.MINE: mine,
-            Version.YOURS: yours,
+            Version.ANCESTOR: ancestor_filepath,
+            Version.MINE: mine_filepath,
+            Version.YOURS: yours_filepath,
         }
         self._opened = {}
         self._originals = {}
@@ -22,7 +22,7 @@ class Files(object):
     def iter_originals(self):
         return self._originals.items()
 
-    def save_result(self, content):
+    def save_resolution(self, content):
         with open(self._paths[Version.MINE], 'w') as fd:
             fd.write(content)
 
@@ -33,7 +33,7 @@ class Temporal(object):
         for version, content in files_contents.items():
             fd, file_name = tempfile.mkstemp()
             self.locations[version] = file_name
-            with open(fd, 'w') as opened:
+            with os.fdopen(fd, 'w') as opened:
                 opened.write(content)
 
     def remove_all(self):
