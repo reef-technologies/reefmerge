@@ -7,21 +7,21 @@ from reefmerge.merger import Merger
 def main():
     parser = ArgumentParser()
     parser.add_argument("files", nargs=3)
-    parser.add_argument("-d", action="store_true")
+    parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
     if len(args.files) < 3:
         raise Exception("Cannot work with less than 3 arguments")
     # TODO check if files exists?
 
-    conflict_han = ConflictHandler(
+    conflict_handler = ConflictHandler(
         ancestor_filepath=args.files[0],
         mine_filepath=args.files[1],
         yours_filepath=args.files[2]
     )
 
-    merger = Merger(conflict_handler=conflict_han)
-    merger.merge(dry_run=args.d)
+    merger = Merger(conflict_handler=conflict_handler)
+    merger.merge(dry_run=args.dry_run)
 
 
 if __name__ == "__main__":

@@ -20,6 +20,7 @@ class ISortMerger(BaseMerger):
         status, out, err = GitWrapper.merge_file(temporal.locations)
         temporal.remove_all()
 
-        logging.warning("There is still conflict")
+        if status:
+            logging.warning("There is still conflict")
 
         return out
