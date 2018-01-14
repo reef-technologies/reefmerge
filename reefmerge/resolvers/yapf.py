@@ -1,5 +1,3 @@
-import logging
-
 from yapf import yapf_api
 
 from reefmerge.conflict_handler import Temporal
@@ -11,17 +9,17 @@ class YapfMerger(BaseMerger):
     def __init__(self, conflict_handler):
         super(YapfMerger, self).__init__(conflict_handler)
 
+    def __repr__(self):
+        return "YAPF merger"
+
     def merge(self):
         contents_yapfed = {
             version: yapf_api.FormatCode(content)[0]
-            for version, content in self._conflict_handler.iter_originals()
+            for version, content in self._conflict_handler.iter_contents()
         }
 
         temporal = Temporal(contents_yapfed)
         status, out, err = GitWrapper.merge_file(temporal.locations)
         temporal.remove_all()
 
-        if status:
-            logging.warning("There is still conflict")
-
-        return out
+        return status, out, contents_yapfed
