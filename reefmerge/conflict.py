@@ -5,9 +5,9 @@ from reefmerge.constants import Version
 
 
 class Conflict(object):
-    def __init__(self):
+    def __init__(self, contents=None):
         self._paths = None
-        self.contents = None
+        self.contents = contents
 
     def read_originals(self):
         for version, file_path in self._paths.items():
@@ -19,10 +19,6 @@ class Conflict(object):
 
     def update_contents(self, versions_dict):
         self.contents = versions_dict
-
-    def save_resolution(self, content):
-        with open(self._paths[Version.MINE], 'w') as fd:
-            fd.write(content)
 
     @classmethod
     def from_paths(cls, ancestor_filepath, mine_filepath, yours_filepath):

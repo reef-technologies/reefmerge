@@ -1,5 +1,6 @@
 import logging
 
+from reefmerge.conflict import Conflict
 from reefmerge.git_wrapper import GitWrapper
 
 
@@ -8,7 +9,7 @@ class MergerSequence(object):
         self._conflict = conflict
         self._mergers_list = mergers_list
 
-    def merge(self, dry_run=True):
+    def merge(self):
         self._conflict.read_originals()
 
         result = None
@@ -21,14 +22,9 @@ class MergerSequence(object):
                 logging.warning("All conflicts resolved after '%s' intervention", str(merger))
                 break
 
-            self._conflict.update_contents(versions_dict=versions_dict)
+            self._conflict = Conflict(contents=versions_dict)
 
         if not result:
             result = GitWrapper.merge_file(self._conflict.contents)
 
-        if dry_run:
-            print(result)
-        else:
-            self._conflict.save_resolution(result)
-
-        return True
+        return result

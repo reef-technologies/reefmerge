@@ -17,14 +17,21 @@ def main():
         raise Exception("Cannot work with less than 3 arguments")
     # TODO check if files exists?
 
-    conflict = Conflict.from_paths(
+    mine_filepath = args.files[1]
+    initial_conflict = Conflict.from_paths(
         ancestor_filepath=args.files[0],
-        mine_filepath=args.files[1],
+        mine_filepath=mine_filepath,
         yours_filepath=args.files[2]
     )
 
-    merger = MergerSequence(conflict=conflict, mergers_list=[ISortMerger, YapfMerger])
-    merger.merge(dry_run=args.dry_run)
+    merger = MergerSequence(conflict=initial_conflict, mergers_list=[ISortMerger, YapfMerger])
+    result = merger.merge()
+
+    if args.dry_run:
+        print(result)
+    else:
+        with open(mine_filepath, 'w') as fd:
+            fd.write(result)
 
 
 if __name__ == "__main__":
