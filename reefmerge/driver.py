@@ -3,6 +3,9 @@ from argparse import ArgumentParser
 from reefmerge.conflict import Conflict
 from reefmerge.merger_sequence import MergerSequence
 
+from reefmerge.resolvers.isort import ISortMerger
+from reefmerge.resolvers.yapf import YapfMerger
+
 
 def main():
     parser = ArgumentParser()
@@ -20,7 +23,7 @@ def main():
         yours_filepath=args.files[2]
     )
 
-    merger = MergerSequence(conflict=conflict, mergers_list=[])
+    merger = MergerSequence(conflict=conflict, mergers_list=[ISortMerger, YapfMerger])
     merger.merge(dry_run=args.dry_run)
 
 
