@@ -5,7 +5,7 @@ from reefmerge.constants import Version
 
 
 class Conflict(object):
-    def __init__(self, contents=None):
+    def __init__(self, contents):
         self.contents = contents
 
     def iter_contents(self):
@@ -26,7 +26,7 @@ class Conflict(object):
         for version, file_path in paths_dict.items():
             with open(file_path, 'r') as fd:
                 contents[version] = fd.read()
-        return cls.from_contents(contents)
+        return Conflict(contents=contents)
 
     @classmethod
     def from_contents(cls, contents_dict):
