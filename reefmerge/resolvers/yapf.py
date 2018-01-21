@@ -9,9 +9,6 @@ class YapfMerger(BaseMerger):
     def __init__(self, conflict_handler):
         super(YapfMerger, self).__init__(conflict_handler)
 
-    def __repr__(self):
-        return "YAPF merger"
-
     def merge(self):
         contents_yapfed = {
             version: yapf_api.FormatCode(content)[0]

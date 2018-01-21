@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 
 from reefmerge.conflict_handler import ConflictHandler
-from reefmerge.merger import Merger
+from reefmerge.merger_sequence import MergerSequence
 
 
 def main():
@@ -20,7 +20,7 @@ def main():
         yours_filepath=args.files[2]
     )
 
-    merger = Merger(conflict_handler=conflict_handler)
+    merger = MergerSequence(conflict_handler=conflict_handler, mergers_list=[])
     merger.merge(dry_run=args.dry_run)
 
 

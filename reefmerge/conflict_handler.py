@@ -11,26 +11,18 @@ class ConflictHandler(object):
             Version.MINE: mine_filepath,
             Version.YOURS: yours_filepath,
         }
-        self._contents = {}
+        self.contents = {}
 
     def read_originals(self):
         for version, file_path in self._paths.items():
             with open(file_path, 'r') as fd:
-                self._contents[version] = fd.read()
+                self.contents[version] = fd.read()
 
     def iter_contents(self):
-        return self._contents.items()
+        return self.contents.items()
 
-    def update_contents(self, ancestor_version=None, mine_version=None, yours_version=None, versions_dict=None):
-        if versions_dict:
-            self._contents = versions_dict
-        else:
-            if ancestor_version:
-                self._contents[Version.ANCESTOR] = ancestor_version
-            if mine_version:
-                self._contents[Version.MINE] = mine_version
-            if yours_version:
-                self._contents[Version.YOURS] = yours_version
+    def update_contents(self, versions_dict):
+        self.contents = versions_dict
 
     def save_resolution(self, content):
         with open(self._paths[Version.MINE], 'w') as fd:

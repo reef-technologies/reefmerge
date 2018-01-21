@@ -9,9 +9,6 @@ class ISortMerger(BaseMerger):
     def __init__(self, conflict_handler):
         super(ISortMerger, self).__init__(conflict_handler)
 
-    def __repr__(self):
-        return "isort merger"
-
     def merge(self):
         contents_isorted = {
             version: SortImports(file_contents=content).output
