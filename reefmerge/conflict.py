@@ -6,30 +6,31 @@ from reefmerge.constants import Version
 
 class Conflict(object):
     def __init__(self, contents=None):
-        self._paths = None
         self.contents = contents
-
-    def read_originals(self):
-        for version, file_path in self._paths.items():
-            with open(file_path, 'r') as fd:
-                self.contents[version] = fd.read()
 
     def iter_contents(self):
         return self.contents.items()
 
-    def update_contents(self, versions_dict):
-        self.contents = versions_dict
-
     @classmethod
     def from_paths(cls, ancestor_filepath, mine_filepath, yours_filepath):
-        conflict = Conflict()
-        conflict._paths = {
+        paths = {
             Version.ANCESTOR: ancestor_filepath,
             Version.MINE: mine_filepath,
             Version.YOURS: yours_filepath,
         }
-        conflict.contents = {}
-        return conflict
+        return cls.from_paths_dict(paths)
+
+    @classmethod
+    def from_paths_dict(cls, paths_dict):
+        contents = {}
+        for version, file_path in paths_dict.items():
+            with open(file_path, 'r') as fd:
+                contents[version] = fd.read()
+        return cls.from_contents(contents)
+
+    @classmethod
+    def from_contents(cls, contents_dict):
+        return Conflict(contents=contents_dict)
 
 
 class Temporal(object):

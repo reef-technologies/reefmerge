@@ -3,7 +3,6 @@ from tests.files.helpers import create_conflict_handler
 
 def default_merger_test(merger, path, merger_test_files_path):
     conflict, result_file = create_conflict_handler(path, merger_test_files_path)
-    conflict.read_originals()
 
     _, result, _ = merger(conflict).merge()
 
