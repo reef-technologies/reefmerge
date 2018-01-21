@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 
-from reefmerge.conflict_handler import ConflictHandler
+from reefmerge.conflict import Conflict
 from reefmerge.merger_sequence import MergerSequence
 
 
@@ -14,13 +14,13 @@ def main():
         raise Exception("Cannot work with less than 3 arguments")
     # TODO check if files exists?
 
-    conflict_handler = ConflictHandler(
+    conflict = Conflict.from_paths(
         ancestor_filepath=args.files[0],
         mine_filepath=args.files[1],
         yours_filepath=args.files[2]
     )
 
-    merger = MergerSequence(conflict_handler=conflict_handler, mergers_list=[])
+    merger = MergerSequence(conflict=conflict, mergers_list=[])
     merger.merge(dry_run=args.dry_run)
 
 

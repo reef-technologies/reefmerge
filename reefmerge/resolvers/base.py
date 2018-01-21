@@ -1,7 +1,7 @@
 
 class BaseMerger(object):
-    def __init__(self, conflict_handler):
-        self._conflict_handler = conflict_handler
+    def __init__(self, conflict):
+        self._conflict = conflict
 
     def __str__(self):
         return self.__class__.__name__
