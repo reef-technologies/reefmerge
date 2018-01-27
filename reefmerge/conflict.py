@@ -28,10 +28,6 @@ class Conflict(object):
                 contents[version] = fd.read()
         return Conflict(contents=contents)
 
-    @classmethod
-    def from_contents(cls, contents_dict):
-        return Conflict(contents=contents_dict)
-
 
 class Temporal(object):
     def __init__(self, files_contents):

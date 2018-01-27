@@ -22,9 +22,9 @@ class MergerSequence(object):
                 logging.warning("All conflicts resolved after '%s' intervention", str(merger))
                 break
 
-            conflict = Conflict.from_contents(versions_dict)
+            conflict = Conflict(contents=versions_dict)
 
         if not result:
-            result = GitWrapper.merge_file(conflict.contents)
+            _, result, _ = GitWrapper.merge_file(conflict.contents)
 
         return result
