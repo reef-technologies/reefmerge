@@ -4,27 +4,29 @@ import tempfile
 from reefmerge.constants import Version
 
 
-class ConflictHandler(object):
-    def __init__(self, ancestor_filepath, mine_filepath, yours_filepath):
-        self._paths = {
+class Conflict(object):
+    def __init__(self, contents):
+        self.contents = contents
+
+    def iter_contents(self):
+        return self.contents.items()
+
+    @classmethod
+    def from_paths(cls, ancestor_filepath, mine_filepath, yours_filepath):
+        paths = {
             Version.ANCESTOR: ancestor_filepath,
             Version.MINE: mine_filepath,
             Version.YOURS: yours_filepath,
         }
-        self._opened = {}
-        self._originals = {}
+        return cls.from_paths_dict(paths)
 
-    def read_originals(self):
-        for version, file_path in self._paths.items():
+    @classmethod
+    def from_paths_dict(cls, paths_dict):
+        contents = {}
+        for version, file_path in paths_dict.items():
             with open(file_path, 'r') as fd:
-                self._originals[version] = fd.read()
-
-    def iter_originals(self):
-        return self._originals.items()
-
-    def save_resolution(self, content):
-        with open(self._paths[Version.MINE], 'w') as fd:
-            fd.write(content)
+                contents[version] = fd.read()
+        return Conflict(contents=contents)
 
 
 class Temporal(object):
